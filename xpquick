@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 23 12:47:08 2019
+
+@author: peter
+"""
+# Semi-automated reserves processing. Outputs a csv for the xpb tracking sheet
+# and a txt for adding brief in Alma.
+
+# libraries
+import time # for timestamp
+import csv # output in excel friendly format
+
+def get_value(prompt):
+  print(prompt + ': ')
+  val = str(input()).strip()
+  return val
+  
+def resv(time, csv):
+    # Collect item and course info"
+    ti = get_value('Title') # title
+    au = get_value('Author') # author
+    isbn = get_value('ISBN') # isbn
+    bar = get_value('Barcode') # barcode
+    cal = get_value('Call Number') # call number
+    prof = get_value('Professor')
+    dept = get_value('Department') # department
+    em = get_value('Email') # email
+    offp = get_value('Office Phone') # office phone
+    homep = get_value('Home Phone') # home phone
+    ccode = get_value('Course Code') # course code
+    sea = get_value('Season') # season
+    yea = get_value('Year') # year
+    pol = get_value('Item loan policy') # item loan policy
+    sy = sea + " " + yea # concatenate season and year
+    tcb = ti + " / " + cal + " / " + bar # concatenate title / call number / barcode 
+    #print("Reserve Location: ")
+    #loc = str(input()) # location should be reserves bib, but maybe we get something weird later
+
+    # for timestamp, we generate automatically with time.ctime()
+    exlst = [time.ctime(), prof, dept, em, offp, homep, ccode, tcb, sy] # list of what goes into excel
+    headings = ["Timestamp", "Professor", "Department", "Email", "Office Phone", "Home Phone", "Course Code", "Title / Call Number / Barcode", "Season and Year"]
+    almalst = [ti, au, isbn, bar, cal, pol]
+
+    # write csv file with inputs for Google sheet
+    with open("xpb.csv", mode="w") as xpb:
+        wr = csv.writer(xpb, quoting=csv.QUOTE_ALL)
+        wr.writerow(headings)
+        wr.writerow(exlst)
+
+    # output for alma
+    print(str(almalst))
+
+    with open("almaquick.txt", mode="w") as almaq:
+        almaq.write('\n'.join(almalst))
+
+resv(time, csv)
